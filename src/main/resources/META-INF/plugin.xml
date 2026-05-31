@@ -23,9 +23,9 @@
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow
             id="Journey Visualizer"
-            factoryClass="dev.jianastrero.JourneyVisualizerToolWindowFactory"
+            factoryClass="dev.jianastrero.toolwindow.JourneyVisualizerToolWindowFactory"
             anchor="right"
-            icon="/icons/icon.svg"/>
+            icon="/icons/toolwindow.svg"/>
     </extensions>
 
     <extensions defaultExtensionNs="org.jetbrains.kotlin">
