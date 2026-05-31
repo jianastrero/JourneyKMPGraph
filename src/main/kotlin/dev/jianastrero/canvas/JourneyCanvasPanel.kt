@@ -8,6 +8,7 @@ import dev.jianastrero.layout.LayoutEngine
 import dev.jianastrero.layout.BfsLayoutEngine
 import dev.jianastrero.model.JourneyGraph
 import dev.jianastrero.model.LayoutDirection
+import com.intellij.util.ui.UIUtil
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -84,7 +85,7 @@ class JourneyCanvasPanel(
     fun renderToImage(): BufferedImage {
         val cw = (nodePositions.values.maxOfOrNull { it.x } ?: 0) + NODE_W + 60
         val ch = (nodePositions.values.maxOfOrNull { it.y } ?: 0) + NODE_H + 60
-        val img = BufferedImage(cw.coerceAtLeast(1), ch.coerceAtLeast(1), BufferedImage.TYPE_INT_ARGB)
+        val img = UIUtil.createImage(null, cw.coerceAtLeast(1), ch.coerceAtLeast(1), BufferedImage.TYPE_INT_ARGB)
         val ig = img.createGraphics()
         ig.color = theme.background; ig.fillRect(0, 0, img.width, img.height)
         val saved = zoomLevel; zoomLevel = 1.0

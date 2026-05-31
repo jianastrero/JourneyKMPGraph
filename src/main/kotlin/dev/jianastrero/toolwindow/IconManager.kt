@@ -2,8 +2,8 @@ package dev.jianastrero.toolwindow
 
 import com.intellij.openapi.util.IconLoader
 import com.intellij.util.IconUtil
+import com.intellij.util.ui.UIUtil
 import java.awt.Color
-import java.awt.image.BufferedImage
 import javax.swing.Icon
 import javax.swing.ImageIcon
 
@@ -15,7 +15,7 @@ class IconManager {
 
     fun tint(icon: Icon, color: Color): Icon {
         val w = icon.iconWidth.coerceAtLeast(1); val h = icon.iconHeight.coerceAtLeast(1)
-        val img = BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB)
+        val img = UIUtil.createImage(null, w, h, java.awt.image.BufferedImage.TYPE_INT_ARGB)
         val g = img.createGraphics(); icon.paintIcon(null, g, 0, 0); g.dispose()
         val rgb = color.rgb and 0xFFFFFF
         for (x in 0 until w) for (y in 0 until h) {

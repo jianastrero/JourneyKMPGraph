@@ -9,7 +9,7 @@ object EmptyStatePainter {
 
         drawMiniGraph(g, theme, cx, cy)
 
-        val nw = 52; val nh = 26
+        val nh = 26
         val titleY = (cy - 62) + nh + 32
 
         g.font = Font("SansSerif", Font.BOLD, 14);  g.color = theme.nodeLabel
@@ -50,6 +50,7 @@ object EmptyStatePainter {
         }
     }
 
+    @Suppress("UseJBColor") // Colors are canvas-theme-driven (theme.isDark), not IDE-theme-driven — JBColor would be incorrect here
     private fun drawCodeBlock(g: Graphics2D, theme: CanvasTheme, cx: Int, titleY: Int) {
         val dark = theme.isDark
         val monoFont = Font("JetBrains Mono", Font.PLAIN, 12).takeUnless { it.family == "Dialog" }

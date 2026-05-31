@@ -11,6 +11,9 @@ import com.intellij.openapi.vfs.newvfs.BulkFileListener
 import com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.openapi.wm.ToolWindow
+import com.intellij.openapi.ui.ComboBox
+import com.intellij.ui.components.JBScrollPane
+import com.intellij.util.ui.JBUI
 import dev.jianastrero.canvas.JourneyCanvasPanel
 import dev.jianastrero.export.MermaidExporter
 import dev.jianastrero.model.JourneyGraph
@@ -33,9 +36,10 @@ class JourneyVisualizerWindow(
     private val disposable = toolWindow.disposable
 
     val canvas   = JourneyCanvasPanel()
-    val dropdown = JComboBox<String>()
+    val dropdown = ComboBox<String>()
     private var journeys = listOf<JourneyGraph>()
 
+    @Suppress("UseJBColor") // Fallback when UIManager returns null; used as canvas bgOverride, not an IDE UI color
     private val ideBg      = UIManager.getColor("Panel.background") ?: Color(0xF5F5F5)
     private val ideIsDark  = (ideBg.red * 0.299 + ideBg.green * 0.587 + ideBg.blue * 0.114) < 128
     private var currentIdeDark = ideIsDark
@@ -53,7 +57,7 @@ class JourneyVisualizerWindow(
     private val themeToggle      = JToggleButton(null as String?, ideIsDark).apply {
         toolTipText = "Toggle light/dark theme"
         isFocusPainted = false
-        margin = Insets(4, 4, 4, 4)
+        margin = JBUI.insets(4)
     }
 
     private var themeIconLight: Icon? = null
@@ -66,7 +70,7 @@ class JourneyVisualizerWindow(
         applyIcons(ideIsDark)
         wireActions()
 
-        val scrollPane = JScrollPane(canvas)
+        val scrollPane = JBScrollPane(canvas)
         wireExportActions(scrollPane)
 
         mainPanel = JPanel(BorderLayout()).apply {
@@ -155,6 +159,7 @@ class JourneyVisualizerWindow(
 
     // ── Icons ─────────────────────────────────────────────────────────────────────
 
+    @Suppress("UseJBColor") // Tint color is a fixed light-grey for dark IDE themes, not an IDE UI component color
     private fun applyIcons(isDark: Boolean) {
         val tint = if (isDark) Color(0xE8E8E8) else null
         fun ic(raw: Icon?) = if (tint != null && raw != null) icons.tint(raw, tint) else raw
@@ -183,6 +188,7 @@ class JourneyVisualizerWindow(
         ApplicationManager.getApplication().messageBus
             .connect(disposable)
             .subscribe(LafManagerListener.TOPIC, LafManagerListener { _ ->
+                @Suppress("UseJBColor") // Fallback when UIManager returns null; passed as canvas bgOverride
                 val newBg   = UIManager.getColor("Panel.background") ?: Color(0xF5F5F5)
                 val newDark = (newBg.red * 0.299 + newBg.green * 0.587 + newBg.blue * 0.114) < 128
                 currentIdeDark = newDark
@@ -197,7 +203,7 @@ class JourneyVisualizerWindow(
             .connect(disposable)
             .subscribe(VirtualFileManager.VFS_CHANGES, object : BulkFileListener {
                 override fun after(events: List<VFileEvent>) {
-                    if (events.any { it is VFileContentChangeEvent && it.file?.extension == "kt" }) refresh()
+                    if (events.any { it is VFileContentChangeEvent && it.file.extension == "kt" }) refresh()
                 }
             })
     }
@@ -220,7 +226,7 @@ class JourneyVisualizerWindow(
     }
 
     private fun squareIconButton(tip: String) = object : JButton() {
-        init { toolTipText = tip; isFocusPainted = false; margin = Insets(2, 2, 2, 2) }
+        init { toolTipText = tip; isFocusPainted = false; margin = JBUI.insets(2) }
         override fun getPreferredSize(): Dimension { val h = super.getPreferredSize().height; return Dimension(h, h) }
     }
 }

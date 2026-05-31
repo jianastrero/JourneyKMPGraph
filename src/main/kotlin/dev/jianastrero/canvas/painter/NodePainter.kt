@@ -7,6 +7,7 @@ import dev.jianastrero.model.StepNode
 import java.awt.*
 
 object NodePainter {
+    @Suppress("UseJBColor") // Drop shadow alpha color is canvas-specific, not IDE-theme-driven
     fun paint(g: Graphics2D, theme: CanvasTheme, step: StepNode, pt: Point) {
         val border = borderColor(theme, step)
 

@@ -17,6 +17,7 @@ data class CanvasTheme(
     val isDark: Boolean
         get() = (background.red * 0.299 + background.green * 0.587 + background.blue * 0.114) < 128
 
+    @Suppress("UseJBColor") // Canvas theme colors are intentionally static palettes, not IDE-theme-driven
     companion object {
         fun light(bgOverride: Color? = null) = CanvasTheme(
             background = bgOverride ?: Color(0xF5F5F5),
