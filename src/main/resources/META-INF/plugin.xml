@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>dev.jianastrero.JourneyKMPVisualizer</id>
-    <name>Journey Visualizer</name>
+    <id>dev.jianastrero.JourneyKMPGraph</id>
+    <name>JourneyKMP Graph</name>
     <vendor url="https://github.com/jianastrero">Jian James Astrero</vendor>
 
     <description><![CDATA[
@@ -22,8 +22,8 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow
-            id="Journey Visualizer"
-            factoryClass="dev.jianastrero.toolwindow.JourneyVisualizerToolWindowFactory"
+            id="JourneyKMP Graph"
+            factoryClass="dev.jianastrero.toolwindow.JourneyGraphToolWindowFactory"
             anchor="right"
             icon="/icons/toolwindow.svg"/>
     </extensions>

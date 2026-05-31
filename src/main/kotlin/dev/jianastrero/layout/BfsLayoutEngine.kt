@@ -41,14 +41,23 @@ class BfsLayoutEngine : LayoutEngine {
         return depth
     }
 
-    private fun computeHorizontal(steps: List<StepNode>, depth: Map<String, Int>): MutableMap<String, Point> {
+    private fun assignSlots(
+        steps: List<StepNode>,
+        depth: Map<String, Int>,
+        pointFor: (d: Int, slot: Int) -> Point
+    ): MutableMap<String, Point> {
         val slotCounter = mutableMapOf<Int, Int>()
         return steps.associate { step ->
             val d    = depth[step.name] ?: 0
             val slot = slotCounter.getOrDefault(d, 0).also { slotCounter[d] = it + 1 }
-            step.name to Point(d * (NODE_W + COL_GAP) + 40, slot * (NODE_H + ROW_GAP) + 40)
+            step.name to pointFor(d, slot)
         }.toMutableMap()
     }
+
+    private fun computeHorizontal(steps: List<StepNode>, depth: Map<String, Int>) =
+        assignSlots(steps, depth) { d, slot ->
+            Point(d * (NODE_W + COL_GAP) + 40, slot * (NODE_H + ROW_GAP) + 40)
+        }
 
     private fun computeVertical(
         steps: List<StepNode>,
@@ -58,7 +67,7 @@ class BfsLayoutEngine : LayoutEngine {
     ): MutableMap<String, Point> {
         val depthY = mutableMapOf<Int, Int>()
         var currentY = 40
-        for (d in 0..maxDepth) {
+        (0..maxDepth).forEach { d ->
             depthY[d] = currentY
             val atThis = stepsByDepth[d] ?: emptyList()
             val atNext = stepsByDepth[d + 1] ?: emptyList()
@@ -66,12 +75,9 @@ class BfsLayoutEngine : LayoutEngine {
             val maxEnterH = atNext.maxOfOrNull { piggyTagsHeight(it, "ON_ENTER") } ?: 0
             currentY += NODE_H + ROW_GAP + maxExitH + maxEnterH
         }
-        val slotCounter = mutableMapOf<Int, Int>()
-        return steps.associate { step ->
-            val d    = depth[step.name] ?: 0
-            val slot = slotCounter.getOrDefault(d, 0).also { slotCounter[d] = it + 1 }
-            step.name to Point(slot * (NODE_W + COL_GAP) + 40, depthY[d] ?: 40)
-        }.toMutableMap()
+        return assignSlots(steps, depth) { d, slot ->
+            Point(slot * (NODE_W + COL_GAP) + 40, depthY[d] ?: 40)
+        }
     }
 
     private fun piggyTagsHeight(step: StepNode, trigger: String): Int {

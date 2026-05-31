@@ -27,7 +27,7 @@ import javax.imageio.ImageIO
 import javax.swing.*
 import javax.swing.filechooser.FileNameExtensionFilter
 
-class JourneyVisualizerWindow(
+class JourneyGraphWindow(
     private val project: Project,
     toolWindow: ToolWindow,
     private val scanner: JourneyScanner = PsiJourneyScanner(),

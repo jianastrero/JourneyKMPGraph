@@ -18,9 +18,11 @@ class IconManager {
         val img = UIUtil.createImage(null, w, h, java.awt.image.BufferedImage.TYPE_INT_ARGB)
         val g = img.createGraphics(); icon.paintIcon(null, g, 0, 0); g.dispose()
         val rgb = color.rgb and 0xFFFFFF
-        for (x in 0 until w) for (y in 0 until h) {
-            val a = (img.getRGB(x, y) ushr 24) and 0xFF
-            if (a > 0) img.setRGB(x, y, (a shl 24) or rgb)
+        (0 until w).forEach { x ->
+            (0 until h).forEach { y ->
+                val a = (img.getRGB(x, y) ushr 24) and 0xFF
+                if (a > 0) img.setRGB(x, y, (a shl 24) or rgb)
+            }
         }
         return ImageIcon(img)
     }

@@ -1,6 +1,6 @@
 import org.jetbrains.intellij.platform.gradle.extensions.intellijPlatform
 
-rootProject.name = "JourneyKMPVisualizer"
+rootProject.name = "JourneyKMPGraph"
 
 pluginManagement {
     plugins {

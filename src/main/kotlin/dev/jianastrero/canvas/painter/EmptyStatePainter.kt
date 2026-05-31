@@ -2,6 +2,17 @@ package dev.jianastrero.canvas.painter
 
 import dev.jianastrero.canvas.CanvasTheme
 import java.awt.*
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+
+private fun Graphics2D.fillAndStrokeRoundRect(
+    x: Int, y: Int, w: Int, h: Int, arc: Int,
+    fillColor: Color, strokeColor: Color, strokeWidth: Float
+) {
+    color = fillColor;  fillRoundRect(x, y, w, h, arc, arc)
+    color = strokeColor; stroke = BasicStroke(strokeWidth); drawRoundRect(x, y, w, h, arc, arc)
+}
 
 object EmptyStatePainter {
     fun paint(g: Graphics2D, theme: CanvasTheme, width: Int, height: Int) {
@@ -31,22 +42,20 @@ object EmptyStatePainter {
         val midY = ny + nh / 2
 
         g.color = theme.edge;  g.stroke = BasicStroke(1.5f)
-        for (i in 0..1) {
+        (0..1).forEach { i ->
             val ax = nodeXs[i] + nw;  val bx = nodeXs[i + 1]
             g.drawLine(ax, midY, bx, midY)
             val s = 7
-            val angle = Math.atan2(0.0, (bx - ax).toDouble())
+            val angle = atan2(0.0, (bx - ax).toDouble())
             g.fillPolygon(
-                intArrayOf(bx, bx - (s * Math.cos(angle - 0.4)).toInt(), bx - (s * Math.cos(angle + 0.4)).toInt()),
-                intArrayOf(midY, midY - (s * Math.sin(angle - 0.4)).toInt(), midY - (s * Math.sin(angle + 0.4)).toInt()),
+                intArrayOf(bx, bx - (s * cos(angle - 0.4)).toInt(), bx - (s * cos(angle + 0.4)).toInt()),
+                intArrayOf(midY, midY - (s * sin(angle - 0.4)).toInt(), midY - (s * sin(angle + 0.4)).toInt()),
                 3
             )
         }
 
         listOf(theme.initial, theme.regular, theme.terminal).forEachIndexed { i, col ->
-            val x = nodeXs[i]
-            g.color = theme.nodeBg;  g.fillRoundRect(x, ny, nw, nh, 10, 10)
-            g.color = col;  g.stroke = BasicStroke(2f);  g.drawRoundRect(x, ny, nw, nh, 10, 10)
+            g.fillAndStrokeRoundRect(nodeXs[i], ny, nw, nh, 10, theme.nodeBg, col, 2f)
         }
     }
 
@@ -70,8 +79,7 @@ object EmptyStatePainter {
         val bx = cx - blockW / 2
         val by = titleY + 38
 
-        g.color = blockBg;  g.fillRoundRect(bx, by, blockW, blockH, 12, 12)
-        g.color = blockBdr; g.stroke = BasicStroke(1f); g.drawRoundRect(bx, by, blockW, blockH, 12, 12)
+        g.fillAndStrokeRoundRect(bx, by, blockW, blockH, 12, blockBg, blockBdr, 1f)
 
         val textX = bx + pad
         val row1Y = by + pad + fm.ascent
