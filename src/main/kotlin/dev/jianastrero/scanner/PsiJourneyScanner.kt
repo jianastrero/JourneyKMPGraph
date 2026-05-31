@@ -1,0 +1,61 @@
+package dev.jianastrero.scanner
+
+import com.intellij.openapi.fileTypes.FileTypeManager
+import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiManager
+import com.intellij.psi.search.FileTypeIndex
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.util.PsiTreeUtil
+import dev.jianastrero.model.ExitEdge
+import dev.jianastrero.model.JourneyGraph
+import dev.jianastrero.model.PiggybackInfo
+import dev.jianastrero.model.StepNode
+import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassOrObject
+
+// @Journey has SOURCE retention — not in bytecode — so we scan KtFiles directly via PSI.
+class PsiJourneyScanner : JourneyScanner {
+    override fun scan(project: Project): List<JourneyGraph> {
+        val scope = GlobalSearchScope.projectScope(project)
+        val ktFileType = FileTypeManager.getInstance().getFileTypeByExtension("kt")
+        val psiManager = PsiManager.getInstance(project)
+        return FileTypeIndex.getFiles(ktFileType, scope).flatMap { vFile ->
+            val psiFile = psiManager.findFile(vFile) ?: return@flatMap emptyList()
+            PsiTreeUtil.findChildrenOfType(psiFile, KtClass::class.java)
+                .filter { it.annotationEntries.any { a -> a.shortName?.asString() == "Journey" } }
+                .map { parseJourney(it) }
+        }
+    }
+
+    private fun parseJourney(ktClass: KtClass): JourneyGraph {
+        val steps = ktClass.body?.declarations
+            ?.filterIsInstance<KtClassOrObject>()
+            ?.filter { it.annotationEntries.any { a -> a.shortName?.asString() == "Step" } }
+            ?: emptyList()
+
+        val nodes = steps.mapIndexed { i, s ->
+            val exits = s.annotationEntries.filter { it.shortName?.asString() == "Exit" }
+            val piggybacks = s.annotationEntries
+                .filter { it.shortName?.asString() == "Piggyback" }
+                .mapNotNull { pb ->
+                    val id = pb.valueArguments.getOrNull(0)?.getArgumentExpression()?.text?.trim('"')
+                        ?: return@mapNotNull null
+                    val triggerText = pb.valueArguments.getOrNull(1)?.getArgumentExpression()?.text ?: "ON_ENTER"
+                    val trigger = if (triggerText.contains("ON_EXIT")) "ON_EXIT" else "ON_ENTER"
+                    PiggybackInfo(id, trigger)
+                }
+            StepNode(name = s.name ?: "?", isInitial = i == 0, isTerminal = exits.isEmpty(), piggybacks = piggybacks)
+        }
+
+        val edges = steps.flatMap { s ->
+            s.annotationEntries.filter { it.shortName?.asString() == "Exit" }.mapNotNull { exit ->
+                val args = exit.valueArguments
+                val label  = args.getOrNull(0)?.getArgumentExpression()?.text?.trim('"') ?: return@mapNotNull null
+                val target = args.getOrNull(1)?.getArgumentExpression()?.text?.removeSuffix("::class") ?: return@mapNotNull null
+                ExitEdge(from = s.name ?: "?", to = target, label = label)
+            }
+        }
+
+        return JourneyGraph(name = ktClass.name ?: "Unknown", steps = nodes, edges = edges)
+    }
+}
