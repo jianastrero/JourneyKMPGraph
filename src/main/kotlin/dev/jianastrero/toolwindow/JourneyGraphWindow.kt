@@ -143,7 +143,7 @@ class JourneyGraphWindow(
     // ── Refresh ──────────────────────────────────────────────────────────────────
 
     fun refresh() {
-        val found = runReadAction { scanner.scan(project) }
+        val found = runReadAction { scanner.scan(project) }.sortedBy { it.name }
         SwingUtilities.invokeLater {
             val prev = dropdown.selectedItem as? String
             journeys = found

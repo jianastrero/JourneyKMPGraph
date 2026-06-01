@@ -27,11 +27,21 @@ changelog {
 
 intellijPlatform {
     pluginConfiguration {
+        ideaVersion {
+            sinceBuild = "232"       // 2023.2 — minimum supported IDE version
+        }
+
         changeNotes = provider {
             changelog.renderItem(
                 changelog.getOrNull(project.version.toString()) ?: changelog.getUnreleased(),
                 Changelog.OutputType.HTML
             )
+        }
+    }
+
+    pluginVerification {
+        ides {
+            recommended()
         }
     }
 
