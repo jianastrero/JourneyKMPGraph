@@ -1,3 +1,4 @@
+import org.jetbrains.changelog.Changelog
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
@@ -17,5 +18,24 @@ dependencies {
 
         // Add plugin dependencies for compilation here:
         bundledPlugin("org.jetbrains.kotlin")
+    }
+}
+
+changelog {
+    version = project.version.toString()
+}
+
+intellijPlatform {
+    pluginConfiguration {
+        changeNotes = provider {
+            changelog.renderItem(
+                changelog.getOrNull(project.version.toString()) ?: changelog.getUnreleased(),
+                Changelog.OutputType.HTML
+            )
+        }
+    }
+
+    publishing {
+        token = providers.environmentVariable("PUBLISH_TOKEN")
     }
 }
