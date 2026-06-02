@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [0.1.2] - 2026-06-02
+## [0.1.2]
 ### Added
 - Android Studio (Meerkat) compatibility via `pluginVerification`
 - Automated `verifyPlugin` CI check on every push and PR
