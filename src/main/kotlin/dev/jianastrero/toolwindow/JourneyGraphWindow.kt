@@ -2,7 +2,7 @@ package dev.jianastrero.toolwindow
 
 import com.intellij.ide.ui.LafManagerListener
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.project.Project
@@ -143,7 +143,7 @@ class JourneyGraphWindow(
     // ── Refresh ──────────────────────────────────────────────────────────────────
 
     fun refresh() {
-        val found = runReadAction { scanner.scan(project) }.sortedBy { it.name }
+        val found = ReadAction.compute<List<JourneyGraph>, Throwable> { scanner.scan(project) }.sortedBy { it.name }
         SwingUtilities.invokeLater {
             val prev = dropdown.selectedItem as? String
             journeys = found
