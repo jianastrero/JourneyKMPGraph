@@ -2,12 +2,6 @@
 
 ## [Unreleased]
 
-### Added
-- Plugin ZIP now attached to GitHub releases automatically via CI
-
-### Fixed
-- Replaced deprecated `runReadAction` with `ReadAction.compute` to resolve deprecated API warning
-
 ## [0.1.2] - 2026-06-02
 ### Added
 - Android Studio (Meerkat) compatibility via `pluginVerification`
@@ -15,6 +9,7 @@
 - `since-build` declared as `232` (IntelliJ 2023.2 minimum)
 - Journeys list in the dropdown is now sorted lexicographically
 - README with demo video, icon, features, and usage guide
+- Plugin ZIP now attached to GitHub releases automatically via CI
 
 ### Changed
 - Renamed plugin, project, and directory from `JourneyKMPVisualizer` to `JourneyKMPGraph`
@@ -27,6 +22,7 @@
 - Resolved redundant `runCatching` layers in PSI scanner and window refresh
 - Fixed `BufferedImage` usage replaced with `UIUtil.createImage()` for HiDPI support
 - Suppressed incorrect `UseJBColor` warnings for canvas-theme-driven colors
+- Replaced deprecated `runReadAction` with `ReadAction.compute` to resolve deprecated API warning
 
 ## [0.1.1]
 ### Fixed
